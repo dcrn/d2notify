@@ -14,6 +14,9 @@ def before_first_request(*args, **kwargs):
 	apifile = open('apikey.txt', 'r')
 	apikey = apifile.read()
 
+	# Get current item hash
+	poll()
+
 @app.route('/poll')
 def poll():
 	global apikey, last_poll, poll_time, items_hash
@@ -34,14 +37,13 @@ def poll():
 @app.route('/')
 def index():
 	global items_hash
-
 	return render_template('index.html', hash=items_hash)
 
 def main():
 	if not os.path.isfile('apikey.txt'):
 		print('No SteamAPI key found (apikey.txt)')
 	else:
-		app.run(debug=True, host='0.0.0.0')
+		app.run(host='0.0.0.0')
 
 if __name__ == '__main__':
 	main()

@@ -1,1 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Steam library</title>
+	<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<style type="text/css">
+	html { height: 100%;}
+		body
+		{
+			background-color: #222;
+			background-image: url('static/techies.png');
+			background-position: bottom right;
+			background-repeat: no-repeat;
+			background-size: cover;
+			color: #eee;
+			text-align: center;
+		}
 
+		#header h1 { display: inline-block; }
+
+		.glyphicon-ok
+		{
+			color: #5cb85c;
+		}
+
+		.glyphicon-remove
+		{
+			color: #d9534f;
+		}
+
+		.output
+		{
+			display: none;
+		}
+	</style>
+	<script type="text/javascript">
+		var items_hash = '{{hash}}';
+
+		$(function(e)
+		{
+			if (window.webkitNotifications.checkPermission() == 0)
+			{
+				$('#notifications_ok').show();
+				$('#test_notification').show();
+			}
+			else
+			{
+				$('#enable_notifications').show();
+				$('#enable_notifications').click(function(e)
+				{
+					e.preventDefault();
+					window.webkitNotifications.requestPermission(function()
+					{
+						if (window.webkitNotifications.checkPermission() == 0)
+						{
+							$('#notifications_ok').show();
+							$('#enable_notifications').hide();
+							$('#test_notification').show();
+						}
+						else
+						{
+							$('#notifications_no').show();
+						}
+					});
+				});
+			}
+
+			$('#test_notification').click(function(e)
+			{
+				e.preventDefault();
+				notify();
+			});
+
+			setTimeout(poll, 120000); // Wait 120s then poll
+		});
+
+		function notify()
+		{
+			if (window.webkitNotifications.checkPermission() == 0)
+			{
+				var notification = window.webkitNotifications.createNotification(
+					    'static/icon.png',
+						'd2notify',
+						'Dota 2 was just updated!'
+					);
+
+				notification.show();
+			}
+		}
+
+		function poll()
+		{
+			$.get('/poll', function(data)
+			{
+				if (data !== items_hash)
+				{
+					items_hash = data;
+					notify();
+				}
+				setTimeout(poll,120000);
+			});
+		}
+	</script>
+</head>
+<body>
+	<div id="header">
+		<h1>d2notify</h1> &nbsp;
+		<iframe src="http://ghbtns.com/github-btn.html?user=dcrn&repo=d2notify&type=watch&count=true"
+			allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe>
+	</div>
+	<h4>Get a notification from Chrome whenever Dota 2 is updated.</h4>
+	<h4>Just click below to enable notifications (Webkit only).</h4>
+	<br />
+	<a href="#" id="enable_notifications" class="output btn btn-primary">Enable notifications</a>
+	<a href="#" id="test_notification" class="output btn btn-primary">Test notification</a>
+	<br />
+	<br />
+	<span id="notifications_ok" class="output"><span class="glyphicon glyphicon-ok"></span> Notifications enabled - Keep this page open (in the background) to be notified of Dota 2 updates.</span>
+	<span id="notifications_no" class="output"><span class="glyphicon glyphicon-remove"></span> Notifications have been disabled for this website. You can re-enable them by going to the website settings up in the URL bar.</span>
+	<br />
+	<br />
+	<br />
+	<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+</body>
+</html>
