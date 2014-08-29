@@ -10,7 +10,7 @@
 		body
 		{
 			background-color: #222;
-			background-image: url('static/techies.png');
+			background-image: url('{{url_for('static', filename='techies.png')}}');
 			background-position: bottom right;
 			background-repeat: no-repeat;
 			background-size: cover;
@@ -81,7 +81,7 @@
 			if (window.webkitNotifications.checkPermission() == 0)
 			{
 				var notification = window.webkitNotifications.createNotification(
-					    'static/icon.png',
+					    '{{url_for('static', filename='icon.png')}}',
 						'd2notify',
 						'Dota 2 was just updated!'
 					);
