@@ -3,7 +3,7 @@ import json, urllib.request, json, time, os
 
 app = Flask(__name__)
 apikey = ''
-poll_time = 120
+poll_time = 60
 last_poll = 0
 items_hash = ''
 
