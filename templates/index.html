@@ -40,53 +40,59 @@
 
 		$(function(e)
 		{
-			if (window.webkitNotifications.checkPermission() == 0)
+			if (!("Notification" in window))
 			{
-				$('#notifications_ok').show();
-				$('#test_notification').show();
+				$('#nosupport').show();
 			}
 			else
 			{
-				$('#enable_notifications').show();
-				$('#enable_notifications').click(function(e)
+				if (Notification.permission === 'granted')
+				{
+					$('#notifications_ok').show();
+					$('#test_notification').show();
+				}
+				else
+				{
+					$('#enable_notifications').show();
+					$('#enable_notifications').click(function(e)
+					{
+						e.preventDefault();
+						Notification.requestPermission(function(permission)
+						{
+							if (!('permission' in Notification))
+							{
+								Notification.permission = permission;
+							}
+
+							if (permission === 'granted')
+							{
+								$('#notifications_ok').show();
+								$('#enable_notifications').hide();
+								$('#test_notification').show();
+							}
+							else
+							{
+								$('#notifications_no').show();
+							}
+						});
+					});
+				}
+
+				$('#test_notification').click(function(e)
 				{
 					e.preventDefault();
-					window.webkitNotifications.requestPermission(function()
-					{
-						if (window.webkitNotifications.checkPermission() == 0)
-						{
-							$('#notifications_ok').show();
-							$('#enable_notifications').hide();
-							$('#test_notification').show();
-						}
-						else
-						{
-							$('#notifications_no').show();
-						}
-					});
+					notify();
 				});
+
+				setTimeout(poll, 120000); // Wait 120s then poll
 			}
-
-			$('#test_notification').click(function(e)
-			{
-				e.preventDefault();
-				notify();
-			});
-
-			setTimeout(poll, 120000); // Wait 120s then poll
 		});
 
 		function notify()
 		{
-			if (window.webkitNotifications.checkPermission() == 0)
+			if (Notification.permission === 'granted')
 			{
-				var notification = window.webkitNotifications.createNotification(
-					    '{{url_for('static', filename='icon.png')}}',
-						'd2notify',
-						'Dota 2 was just updated!'
-					);
-
-				notification.show();
+				var notification = new Notification('d2notify', {icon:'{{url_for('static', filename='icon.png')}}', body: 'Dota 2 was just updated!'});
 			}
 		}
 
@@ -113,6 +119,7 @@
 	<h4>Get a notification from Chrome whenever Dota 2 is updated.</h4>
 	<h4>Just click below to enable notifications (Webkit only).</h4>
 	<br />
+	<span id="nosupport" class="output"><span class="glyphicon glyphicon-remove"></span> Your browser doesn't support desktop notifications, sorry!</span>
 	<a href="#" id="enable_notifications" class="output btn btn-primary">Enable notifications</a>
 	<a href="#" id="test_notification" class="output btn btn-primary">Test notification</a>
 	<br />
