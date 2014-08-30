@@ -101,7 +101,7 @@
 		{
 			$.get('{{url_for('poll')}}', function(data)
 			{
-				if (data !== items_hash)
+				if (data !== items_hash && data.length == 40)
 				{
 					items_hash = data;
 					notify();
