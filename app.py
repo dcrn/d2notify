@@ -12,7 +12,7 @@ def before_first_request(*args, **kwargs):
 	# Get Steam API key
 	global apikey
 	apifile = open('apikey.txt', 'r')
-	apikey = apifile.read()
+	apikey = apifile.read()[:-1]
 
 	# Get current item hash
 	poll()
